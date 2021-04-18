@@ -1,8 +1,9 @@
 <template>
   <nav>
     <div class="nav nav-tabs justify-content-center" id="nav-tab" role="tablist">
-      <router-link class="nav-link active"  data-toggle="tab"  role="tab"  aria-selected="true" to="/chat">Chat</router-link>
-      <router-link class="nav-link"  data-toggle="tab"  role="tab"  aria-selected="false" to="/Broadcast">Broadcast</router-link>
+      <router-link class="nav-link active"  data-toggle="tab"  role="tab"  aria-selected="true" to="/Chat">Chat</router-link>
+      <router-link class="nav-link"  data-toggle="tab"  role="tab"  aria-selected="false" to="/BroadcastHost">BroadcastHost</router-link>
+      <router-link class="nav-link"  data-toggle="tab"  role="tab"  aria-selected="false" to="/BroadcastReceive">BroadcastReceive</router-link>
       <router-link class="nav-link"  data-toggle="tab"  role="tab"  aria-selected="false" to="/ChatRoom">ChatRoom</router-link>
     </div>
   </nav>

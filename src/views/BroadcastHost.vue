@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: "Broadcast"
+  name: "BroadcastHost"
 }
 </script>
 
