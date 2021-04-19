@@ -4,7 +4,7 @@
       <div class="col col-lg-2">
         <UserList></UserList>
       </div>
-      <div class="col col-lg-6">
+      <div class="col col-lg-10">
         <chat-window></chat-window>
       </div>
     </div>
@@ -33,6 +33,12 @@ export default {
   .col-lg-2{
     padding: 0;
     height: 100%;
+  }
+  .col-lg-10{
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    background: azure;
   }
 
 </style>

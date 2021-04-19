@@ -2,34 +2,25 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
+    connection:null,
     token:"",
-    chatList:[
+    chatUsers:[
         {id:1,name:"aa",email:"AA"},
         {id:1,name:"aa",email:"AA"},
-        {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-      {id:1,name:"aa",email:"AA"},
-
+        {id:1,name:"aa",email:"AA"}
     ],
-    chatTo:""
+    chatTo:"",
+    chatRecords:[],
+    BroadcastUsers:[],
+    BroadcastRecords:[],
+    BroadcastHost:"",
+    ChatRoomUsers:[],
+    ChatRoomRecords:[]
+
+
   },
   mutations: {
+
   },
   actions: {
   },

@@ -23,17 +23,17 @@
             <div class="input-group-prepend">
               <span class="input-group-text" >Email</span>
             </div>
-            <input :value="email" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            <input v-model="email" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
           </div>
           <div class="input-group mb-3">
             <div class="input-group-prepend">
               <span class="input-group-text" >Password</span>
             </div>
-            <input :value="password" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            <input v-model="password" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
           </div>
         </div>
         <div class="modal-footer">
-          <button @click="Login" type="button" class="btn btn-primary">Login</button>
+          <button @click="Login" id="login" type="button" class="btn btn-primary">Login</button>
         </div>
       </div>
     </div>
@@ -52,21 +52,52 @@
 <script>
   import {onMounted} from "vue";
   import $ from "jquery"
+  import * as signalR from "@microsoft/signalr";
+  import axios from "axios";
 
 
   export default {
     name:"App",
     data(){
       return{
-        email:"email",
-        password:"password"
+        email:"",
+        password:""
       }
     },
     methods:{
       Login:function (){
+        var self = this
+        $("#login").addClass("disabled")
+        //$("#login").setAttribute("aria-disabled","true")
         //login to do
-        console.log(this.email+"   "+this.password)
-        $("#staticBackdrop").modal("hide")
+        //var sendData = JSON.stringify(loginModle)
+        console.log(self.email+"   "+self.password)
+        axios({
+          method:"post",
+          url:"http://localhost:12165/Account/Login",
+          headers:{
+            "Access-Control-Allow-Origin": "http://localhost:8080",
+            "Content-Type":"application/json;charset=UTF-8",
+            "Data-Type":"text"
+          },
+          data:JSON.stringify({
+            "Email":self.email,
+            "Password":self.password
+          })
+        }).then(function (response){
+          self.$store.state.token = response.data
+          self.$store.state.connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:12165/Hubs/MessageHub", { accessTokenFactory: () => self.$store.state.token }).build();
+          $("#staticBackdrop").modal("hide")
+
+          //bind func
+
+          self.$store.state.connection.start()
+          console.log(self.$store.state.token)
+          console.log(self.$store.state.connection)
+        })
+
+
+        //
       }
     },
     setup(){

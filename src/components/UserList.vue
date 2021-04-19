@@ -1,4 +1,7 @@
 <template>
+  <div class="list-header">
+    <h class="list-title">UserList</h>
+  </div>
   <ul class="list-group list-group-flush">
     <li v-for="user in $store.state.chatList" v-bind:key="user.id" class="list-group-item ">
       <span @click="ChatTo(user)" class="user" >{{user.name}}</span>
@@ -23,15 +26,25 @@ export default {
     text-align: center;
     margin-left: 45%;
   }
+  .list-header{
+    height: 50px;
+    padding-top: 10px;
+    border-bottom: deepskyblue 1px solid;
+    border-right: 1px cornflowerblue solid;
+  }
+  .list-title{
+    text-align: center;
+    margin-left: 30%;
+  }
   .list-group{
     padding: 0;
-    height: 100%;
-    border-right: 1px skyblue solid;
+    height: calc(100% - 50px);
+    border-right: 2px cornflowerblue solid;
     overflow: scroll;
   }
   .list-group::-webkit-scrollbar {
     /*滚动条整体样式*/
-    width : 3px;  /*高宽分别对应横竖滚动条的尺寸*/
+    width : 4px;  /*高宽分别对应横竖滚动条的尺寸*/
     height: 1px;
   }
   .list-group::-webkit-scrollbar-thumb {
@@ -46,4 +59,5 @@ export default {
     border-radius: 10px;
     background   : #ededed;
   }
+
 </style>
