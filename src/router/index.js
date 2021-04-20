@@ -2,8 +2,18 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Chat from "@/views/Chat";
 import Broadcast from "@/views/BroadcastHost";
 import ChatRoom from "@/views/ChatRoom";
+import Login from "@/views/Login";
 
 const routes = [
+  {
+    path: '/',
+    redirect: '/Login'
+  },
+  {
+    path: '/Login',
+    name: 'Login',
+    component: Login
+  },
   {
     path: '/Chat',
     name: 'Chat',

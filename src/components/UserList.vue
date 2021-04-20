@@ -1,10 +1,10 @@
 <template>
   <div class="list-header">
-    <h class="list-title">UserList</h>
+    <h6 class="list-title">Users</h6>
   </div>
   <ul class="list-group list-group-flush">
-    <li v-for="user in $store.state.chatList" v-bind:key="user.id" class="list-group-item ">
-      <span @click="ChatTo(user)" class="user" >{{user.name}}</span>
+    <li v-for="user in users" v-bind:key="user" class="list-group-item ">
+      <a @click="ChatTo(user)" class="user" >{{user}}</a>
     </li>
   </ul>
 </template>
@@ -13,9 +13,23 @@
 
 export default {
   name: "UserList",
+  computed:{
+    users(){
+      switch (this.$store.state.model) {
+        case "chat": return this.$store.state.chatUsers
+        case "broadcast": return this.$store.state.BroadcastUsers
+        case "chatroom": return this.$store.state.ChatRoomUsers
+        default: return []
+      }
+
+    }
+  },
   methods:{
     ChatTo:function(user){
-      this.$store.state.chatTo = user.email
+      if (this.$store.state.model !== "chat")
+        return
+      this.$store.state.chatTo = user
+      console.log("set chatTo: " + this.$store.state.chatTo)
     }
   }
 }
@@ -24,7 +38,17 @@ export default {
 <style scoped>
   .user{
     text-align: center;
-    margin-left: 45%;
+    margin-left: 5%;
+  }
+  .user:link{
+    text-decoration: none;
+  }
+  .user:visited{
+    text-decoration: none;
+  }
+  .user:hover{
+    text-decoration: none;
+    cursor: pointer;
   }
   .list-header{
     height: 50px;
@@ -34,7 +58,7 @@ export default {
   }
   .list-title{
     text-align: center;
-    margin-left: 30%;
+    margin-left: 1%;
   }
   .list-group{
     padding: 0;

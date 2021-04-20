@@ -14,9 +14,31 @@
 <script>
 import UserList from "@/components/UserList";
 import ChatWindow from "@/components/ChatWindow";
+
+
 export default {
   name: "Chat",
   components: {ChatWindow, UserList},
+  beforeCreate() {
+    console.log("beforeCreate")
+  },
+  created() {
+    console.log("created")
+  },
+  computed:{
+
+  },
+  mounted() {
+    this.$store.commit("BuildConnection")
+    //bind func
+    this.$store.commit("Bind")
+    this.$store.commit("SetModel","chat")
+    //this.$store.dispatch("StartConnection")
+    this.$store.dispatch("SetOnline","chat")
+  },
+  unmounted() {
+    this.$store.dispatch("StopConnection")
+  }
 }
 </script>
 

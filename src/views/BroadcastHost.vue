@@ -4,7 +4,10 @@
 
 <script>
 export default {
-  name: "BroadcastHost"
+  name: "BroadcastHost",
+  mounted() {
+    this.$store.state.model = "broadcast"
+  }
 }
 </script>
 

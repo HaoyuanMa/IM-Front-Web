@@ -1,12 +1,12 @@
 <template>
 <div class="content">
   <div class="chat-header">
-    <h class="chat-title">mhy</h>
+    <a class="chat-title">{{winTitle}}</a>
   </div>
   <div class="chat-win">
     <ul class="list-group list-group-flush">
-      <li v-for="user in $store.state.chatList" v-bind:key="user.id" class="list-group-item record-item">
-        <span  class="record" >{{user.name}}</span>
+      <li v-for="record in records" v-bind:key="record" class="list-group-item record-item">
+        <span  class="record" >{{record.content}}</span>
       </li>
     </ul>
   </div>
@@ -14,10 +14,10 @@
     tt
   </div>
   <div class="send-msg">
-    <textarea class="msg"></textarea>
+    <textarea v-model="message" class="msg"></textarea>
   </div>
   <div class="send">
-    <button class="btn btn-primary btn-sm">Send</button>
+    <button @click="send" class="btn btn-primary btn-sm">Send</button>
   </div>
   <div class="footer"></div>
 </div>
@@ -25,7 +25,51 @@
 
 <script>
 export default {
-  name: "ChatWindow"
+  name: "ChatWindow",
+  data(){
+    return{
+      message:""
+    }
+  },
+  computed:{
+    winTitle(){
+      switch (this.$store.state.model) {
+        case "chat": return this.$store.state.chatTo
+        case "broadcast": return this.$store.state.BroadcastHost
+        case "chatroom": return "ChatRoom"
+        default: return []
+      }
+    },
+    records(){
+      switch (this.$store.state.model) {
+        case "chat": return this.$store.state.chatRecords
+        case "broadcast": return this.$store.state.BroadcastRecords
+        case "chatroom": return this.$store.state.ChatRoomRecords
+        default: return []
+      }
+    }
+  },
+  methods:{
+    send:function (){
+      let to = []
+      switch (this.$store.state.model) {
+        case "chat": to = [this.$store.state.chatTo]
+              break
+        case "broadcast": to = this.$store.state.BroadcastUsers
+              break
+        case "chatroom": break
+        default: break
+      }
+      let msg = {
+        "type":this.$store.state.model,
+        "from":this.$store.state.userEmail,
+        "to": to,
+        "content":this.message
+      }
+      this.message = ""
+      this.$store.dispatch("SendMessage",msg)
+    }
+  }
 }
 </script>
 
