@@ -82,6 +82,13 @@ export default createStore({
         });
       });
       console.log("bind Broadcast")
+
+      state.connection.on("GetChatRoomUsers", function (users) {
+        users.forEach(user => {
+          state.ChatRoomUsers.push(user);
+        });
+      });
+      console.log("bind ChatRoom")
     },
   },
   actions: {

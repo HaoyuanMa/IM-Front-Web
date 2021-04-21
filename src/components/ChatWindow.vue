@@ -37,7 +37,7 @@ export default {
   },
   computed:{
     isHost(){
-      return this.$store.state.IsHost
+      return this.$store.state.IsHost || this.$store.state.model !== "broadcast"
     },
     winTitle(){
       switch (this.$store.state.model) {
