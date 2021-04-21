@@ -13,6 +13,7 @@ export default createStore({
     BroadcastUsers:[],
     BroadcastRecords:[],
     BroadcastHost:"",
+    IsHost:false,
     ChatRoomUsers:[],
     ChatRoomRecords:[]
 
@@ -21,7 +22,7 @@ export default createStore({
   mutations: {
     SetModel(state,m){
       console.log("set model: "+ m)
-      this.state.model = m
+      state.model = m
     },
     BuildConnection(state){
       state.connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:12165/Hubs/MessageHub", { accessTokenFactory: () => this.state.token }).build();
@@ -51,8 +52,10 @@ export default createStore({
         //let m = x.from+" says: "+x.content;
         switch (x.type) {
           case "chat": state.chatRecords.push(x)
+              state.chatTo = x.from
                 break
           case "broadcast": state.BroadcastRecords.push(x)
+              state.BroadcastHost = x.from
                 break
           case "chatroom": state.ChatRoomRecords.push(x)
                 break

@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Chat from "@/views/Chat";
-import Broadcast from "@/views/BroadcastHost";
+import BroadcastHost from "@/views/BroadcastHost";
 import ChatRoom from "@/views/ChatRoom";
 import Login from "@/views/Login";
+import BroadcastReceive from "@/views/BroadcastReceive";
 
 const routes = [
   {
@@ -20,12 +21,17 @@ const routes = [
     component: Chat
   },
   {
-    path: '/Broadcast',
-    name: 'Broadcast',
+    path: '/BroadcastHost',
+    name: 'BroadcastHost',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: Broadcast
+    component: BroadcastHost
+  },
+  {
+    path: '/BroadcastReceive',
+    name: 'BroadcastReceive',
+    component: BroadcastReceive
   },
   {
     path: '/ChatRoom',

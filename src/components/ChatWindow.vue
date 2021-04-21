@@ -6,7 +6,11 @@
   <div class="chat-win">
     <ul class="list-group list-group-flush">
       <li v-for="record in records" v-bind:key="record" class="list-group-item record-item">
-        <span  class="record" >{{record.content}}</span>
+        <div class="msg">
+          <span class="record-from">{{record.from}}</span>
+          <br>
+          <span  class="record-content" >{{record.content}}</span>
+        </div>
       </li>
     </ul>
   </div>
@@ -17,7 +21,7 @@
     <textarea v-model="message" class="msg"></textarea>
   </div>
   <div class="send">
-    <button @click="send" class="btn btn-primary btn-sm">Send</button>
+    <button @click="send" v-if="isHost" class="btn btn-primary btn-sm">Send</button>
   </div>
   <div class="footer"></div>
 </div>
@@ -32,21 +36,34 @@ export default {
     }
   },
   computed:{
+    isHost(){
+      return this.$store.state.IsHost
+    },
     winTitle(){
       switch (this.$store.state.model) {
         case "chat": return this.$store.state.chatTo
-        case "broadcast": return this.$store.state.BroadcastHost
+        case "broadcast": return this.$store.state.BroadcastHost + "  is saying"
         case "chatroom": return "ChatRoom"
         default: return []
       }
     },
     records(){
+      let rec = []
+      let me = this.$store.state.userEmail
+      let chatTo = this.$store.state.chatTo
       switch (this.$store.state.model) {
-        case "chat": return this.$store.state.chatRecords
+        case "chat":
+              this.$store.state.chatRecords.forEach(record =>{
+                if((record.from === me && record.to[0] === chatTo)||(record.from === chatTo && record.to[0] === me)){
+                  rec.push(record)
+                }
+              })
+              break
         case "broadcast": return this.$store.state.BroadcastRecords
         case "chatroom": return this.$store.state.ChatRoomRecords
-        default: return []
+        default: break
       }
+      return rec
     }
   },
   methods:{
@@ -101,6 +118,17 @@ export default {
     height: 100%;
     width: 100%;
     resize: none;
+  }
+  .record-item{
+    background: azure;
+    padding: 5px;
+
+  }
+  .record-content{
+    padding-left: 20px;
+  }
+  .record-from{
+    color: cornflowerblue;
   }
   textarea:focus {
     outline: none;
