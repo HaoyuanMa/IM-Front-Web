@@ -32,7 +32,7 @@ export default {
     this.$store.commit("BuildConnection")
     //bind func
     this.$store.commit("Bind")
-    this.$store.commit("SetModel","chat")
+    this.$store.commit("SetMode","chat")
     //this.$store.dispatch("StartConnection")
     this.$store.dispatch("SetOnline","chat")
   },

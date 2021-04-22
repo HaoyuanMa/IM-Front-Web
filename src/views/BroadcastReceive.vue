@@ -31,7 +31,7 @@ export default {
     this.$store.commit("BuildConnection")
     //bind func
     this.$store.commit("Bind")
-    this.$store.commit("SetModel","broadcast")
+    this.$store.commit("SetMode","broadcast")
     //this.$store.dispatch("StartConnection")
     this.$store.dispatch("SetOnline","broadcast")
   },

@@ -3,7 +3,7 @@ import * as signalR from "@microsoft/signalr";
 
 export default createStore({
   state: {
-    model:"",
+    mode:"",
     connection:null,
     userEmail:"",
     token:"",
@@ -20,9 +20,9 @@ export default createStore({
 
   },
   mutations: {
-    SetModel(state,m){
-      console.log("set model: "+ m)
-      state.model = m
+    SetMode(state,m){
+      console.log("set mode: "+ m)
+      state.mode = m
     },
     BuildConnection(state){
       state.connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:12165/Hubs/MessageHub", { accessTokenFactory: () => this.state.token }).build();

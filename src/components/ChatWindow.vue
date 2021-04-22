@@ -21,7 +21,7 @@
     <textarea v-model="message" class="msg"></textarea>
   </div>
   <div class="send">
-    <button @click="send" v-if="isHost" class="btn btn-primary btn-sm">Send</button>
+    <button @click="sendText" v-if="isHost" class="btn btn-primary btn-sm">Send</button>
   </div>
   <div class="footer"></div>
 </div>
@@ -37,10 +37,10 @@ export default {
   },
   computed:{
     isHost(){
-      return this.$store.state.IsHost || this.$store.state.model !== "broadcast"
+      return this.$store.state.IsHost || this.$store.state.mode !== "broadcast"
     },
     winTitle(){
-      switch (this.$store.state.model) {
+      switch (this.$store.state.mode) {
         case "chat": return this.$store.state.chatTo
         case "broadcast": return this.$store.state.BroadcastHost + "  is saying"
         case "chatroom": return "ChatRoom"
@@ -51,7 +51,7 @@ export default {
       let rec = []
       let me = this.$store.state.userEmail
       let chatTo = this.$store.state.chatTo
-      switch (this.$store.state.model) {
+      switch (this.$store.state.mode) {
         case "chat":
               this.$store.state.chatRecords.forEach(record =>{
                 if((record.from === me && record.to[0] === chatTo)||(record.from === chatTo && record.to[0] === me)){
@@ -67,9 +67,9 @@ export default {
     }
   },
   methods:{
-    send:function (){
+    sendText:function (){
       let to = []
-      switch (this.$store.state.model) {
+      switch (this.$store.state.mode) {
         case "chat": to = [this.$store.state.chatTo]
               break
         case "broadcast": to = this.$store.state.BroadcastUsers
@@ -78,9 +78,10 @@ export default {
         default: break
       }
       let msg = {
-        "type":this.$store.state.model,
+        "type":this.$store.state.mode,
         "from":this.$store.state.userEmail,
         "to": to,
+        "contentType":"text",
         "content":this.message
       }
       this.message = ""

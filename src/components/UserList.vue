@@ -15,7 +15,7 @@ export default {
   name: "UserList",
   computed:{
     users(){
-      switch (this.$store.state.model) {
+      switch (this.$store.state.mode) {
         case "chat": return this.$store.state.chatUsers
         case "broadcast": return this.$store.state.BroadcastUsers
         case "chatroom": return this.$store.state.ChatRoomUsers
@@ -26,7 +26,7 @@ export default {
   },
   methods:{
     ChatTo:function(user){
-      if (this.$store.state.model !== "chat")
+      if (this.$store.state.mode !== "chat" || this.$store.state.userEmail === user)
         return
       this.$store.state.chatTo = user
       console.log("set chatTo: " + this.$store.state.chatTo)
