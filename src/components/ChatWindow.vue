@@ -9,7 +9,8 @@
         <div class="msg">
           <span class="record-from">{{record.from}}</span>
           <br>
-          <span  class="record-content" >{{record.content}}</span>
+          <span v-if="record.contentType === 'text'" class="record-content" >{{record.content}}</span>
+          <img v-if="record.contentType === 'image'" :src="record.content" class="record-content" style="width: 55%;">
         </div>
       </li>
     </ul>
@@ -42,8 +43,8 @@
         <div class="modal-body">
           <div class="input-group">
             <div class="custom-file">
-              <input @change="setFileTitle" type="file" class="custom-file-input" id="inputGroupFile" aria-describedby="inputGroupFileAddon">
-              <label class="custom-file-label" for="inputGroupFile">Choose file</label>
+              <input @change="setFileTitle" type="file" accept="image/*" class="custom-file-input" id="inputGroupFile" aria-describedby="inputGroupFileAddon">
+              <label class="custom-file-label" for="inputGroupFile">{{fileLabel}}</label>
             </div>
           </div>
 
@@ -60,12 +61,15 @@
 
 <script>
 import $ from "jquery";
+import {compressAccurately} from "image-conversion"
 
 export default {
   name: "ChatWindow",
   data(){
     return{
-      message:""
+      message:"",
+      fileLabel:"Choose File",
+      image:null
     }
   },
   computed:{
@@ -124,17 +128,46 @@ export default {
       $("#liveBackdrop").modal("show")
     },
     setFileTitle:function (res){
-      let fileName = ""
-
-
-
-      //todo: set title;get file
-
-
+      let files = res.target.files
+      console.log(files[0])
+      if (files.length > 0){
+        this.fileLabel = files[0].name
+        this.image = files[0]
+      }else {
+        this.fileLabel = "Choose File"
+      }
     },
-    sendImage:function (){
-
-      console.log("sendImage")
+    sendImage: async function () {
+      let self = this
+      let blob = self.image
+      let file = await compressAccurately(blob, 128)
+      let base64Reader = new FileReader()
+      base64Reader.readAsDataURL(file)
+      base64Reader.onloadend = function () {
+        let to = []
+        switch (self.$store.state.mode) {
+          case "chat":
+            to = [self.$store.state.chatTo]
+            break
+          case "broadcast":
+            to = self.$store.state.BroadcastUsers
+            break
+          case "chatroom":
+            break
+          default:
+            break
+        }
+        let msg = {
+          "type": self.$store.state.mode,
+          "from": self.$store.state.userEmail,
+          "to": to,
+          "contentType": "image",
+          "content": base64Reader.result
+        }
+        self.image = null
+        self.$store.dispatch("SendMessage", msg)
+        $("#liveBackdrop").modal("hide")
+      }
     }
   }
 }
