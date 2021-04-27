@@ -15,7 +15,7 @@
     </ul>
   </div>
   <div class="menu">
-    tt
+    <font-awesome-icon :icon="['fas','image']" @click="showSendImage" class="img"></font-awesome-icon>
   </div>
   <div class="send-msg">
     <textarea v-model="message" class="msg"></textarea>
@@ -24,10 +24,43 @@
     <button @click="sendText" v-if="isHost" class="btn btn-primary btn-sm">Send</button>
   </div>
   <div class="footer"></div>
+
+  <div class="modal fade" id="liveBackdrop"  tabindex="-1" aria-labelledby="liveBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Send Image</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <!--
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          -->
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <div class="custom-file">
+              <input @change="setFileTitle" type="file" class="custom-file-input" id="inputGroupFile" aria-describedby="inputGroupFileAddon">
+              <label class="custom-file-label" for="inputGroupFile">Choose file</label>
+            </div>
+          </div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button @click="sendImage" type="button" class="btn btn-primary">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 </template>
 
 <script>
+import $ from "jquery";
+
 export default {
   name: "ChatWindow",
   data(){
@@ -86,6 +119,22 @@ export default {
       }
       this.message = ""
       this.$store.dispatch("SendMessage",msg)
+    },
+    showSendImage:function (){
+      $("#liveBackdrop").modal("show")
+    },
+    setFileTitle:function (res){
+      let fileName = ""
+
+
+
+      //todo: set title;get file
+
+
+    },
+    sendImage:function (){
+
+      console.log("sendImage")
     }
   }
 }
@@ -127,6 +176,13 @@ export default {
   }
   .record-content{
     padding-left: 20px;
+  }
+  .img{
+    color: cornflowerblue;
+    margin-left: 5px;
+  }
+  .img:hover{
+    cursor: pointer;
   }
   .record-from{
     color: cornflowerblue;
