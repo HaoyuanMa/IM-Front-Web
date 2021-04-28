@@ -52,20 +52,22 @@ export default {
       //login to do
       //var sendData = JSON.stringify(loginModle)
       console.log(self.email+"   "+self.password)
+
+      //todo: go or .net core
       axios({
         method:"post",
-        url:"http://localhost:12165/Account/Login",
+        url:"http://localhost:5202/Account/Login",
         headers:{
           "Access-Control-Allow-Origin": "http://localhost:8080",
           "Content-Type":"application/json;charset=UTF-8",
           "Data-Type":"text"
         },
         data:JSON.stringify({
-          "Email":self.email,
-          "Password":self.password
+          "username":self.email,
+          "password":self.password
         })
       }).then(function (response){
-        self.$store.state.token = response.data
+        self.$store.state.token = response.data.token //todo: signalr del .token
         self.$store.state.userEmail = self.email
 
 

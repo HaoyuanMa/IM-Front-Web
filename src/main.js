@@ -7,7 +7,8 @@ import "bootstrap/dist/js/bootstrap.bundle.min"
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faImage } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import store from './store'
+//todo: import go
+import store from './store/index'
 
 library.add(faImage,)
 
