@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 
 export default createStore({
     state: {
+        env:"go",
         mode:"",
         connection:null,
         userEmail:"",
@@ -128,7 +129,7 @@ export default createStore({
             console.log(type)
             this.state.connection.onopen = async function () {
                 let call = {
-                    "Method": "setOnline",
+                    "Method": "SetOnline",
                     "Params": {
                         "token": "Bearer " + self.state.token,
                         "loginType": type
@@ -146,10 +147,16 @@ export default createStore({
         async SendMessage(context,msg){
             this.state.chatRecords.push(msg)
             let call = {
-                "method":"SendMessage",
-                "params":msg
+                "Method":"SendMessage",
+                "Params":{
+                    "token": "Bearer " + this.state.token,
+                    "msg":JSON.stringify(msg)
+                }
             }
-            await this.state.connection.send(call)
+            console.log(call)
+            let message = JSON.stringify(call)
+            console.log(message)
+            await this.state.connection.send(message)
             console.log("send message: ")
             console.log(msg)
         }

@@ -53,10 +53,15 @@ export default {
       //var sendData = JSON.stringify(loginModle)
       console.log(self.email+"   "+self.password)
 
-      //todo: go or .net core
+      let address = ""
+      if(self.$store.state.env === "go"){
+        address = "http://localhost:5202/Account/Login"
+      }else {
+        address = "http://localhost:12165/Account/Login"
+      }
       axios({
         method:"post",
-        url:"http://localhost:5202/Account/Login",
+        url:address,
         headers:{
           "Access-Control-Allow-Origin": "http://localhost:8080",
           "Content-Type":"application/json;charset=UTF-8",
@@ -67,7 +72,11 @@ export default {
           "password":self.password
         })
       }).then(function (response){
-        self.$store.state.token = response.data.token //todo: signalr del .token
+        if(self.$store.state.env === "go"){
+          self.$store.state.token = response.data.token
+        }else{
+          self.$store.state.token = response.data
+        }
         self.$store.state.userEmail = self.email
 
 

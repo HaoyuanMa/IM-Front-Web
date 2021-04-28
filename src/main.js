@@ -10,6 +10,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 //todo: import go
 import store from './store/index'
 
+
+
 library.add(faImage,)
 
 
