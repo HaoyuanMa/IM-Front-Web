@@ -54,11 +54,21 @@ export default {
       console.log(self.email+"   "+self.password)
 
       let address = ""
+      let jsonData = null
       if(self.$store.state.env === "go"){
         address = "http://localhost:5202/Account/Login"
+        jsonData = {
+          "username":self.email,
+          "password":self.password
+        }
       }else {
         address = "http://localhost:12165/Account/Login"
+        jsonData = {
+          "Email":self.email,
+          "Password":self.password
+        }
       }
+
       axios({
         method:"post",
         url:address,
@@ -67,10 +77,7 @@ export default {
           "Content-Type":"application/json;charset=UTF-8",
           "Data-Type":"text"
         },
-        data:JSON.stringify({
-          "username":self.email,
-          "password":self.password
-        })
+        data:JSON.stringify(jsonData)
       }).then(function (response){
         if(self.$store.state.env === "go"){
           self.$store.state.token = response.data.token

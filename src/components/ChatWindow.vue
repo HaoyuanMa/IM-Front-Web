@@ -17,6 +17,7 @@
   </div>
   <div class="menu">
     <font-awesome-icon :icon="['fas','image']" @click="showSendImage" class="img"></font-awesome-icon>
+    <font-awesome-icon :icon="['fas','folder']" @click="showSendFile" class="file"></font-awesome-icon>
   </div>
   <div class="send-msg">
     <textarea v-model="message" class="msg"></textarea>
@@ -26,29 +27,22 @@
   </div>
   <div class="footer"></div>
 
-  <div class="modal fade" id="liveBackdrop"  tabindex="-1" aria-labelledby="liveBackdropLabel" aria-hidden="true">
+  <div class="modal fade" id="liveBackdrop-img"  tabindex="-1" aria-labelledby="liveBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Send Image</h5>
+          <h5 class="modal-title" id="staticBackdropLabel-img">Send Image</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          <!--
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          -->
         </div>
         <div class="modal-body">
           <div class="input-group">
             <div class="custom-file">
-              <input @change="setFileTitle" type="file" accept="image/*" class="custom-file-input" id="inputGroupFile" aria-describedby="inputGroupFileAddon">
-              <label class="custom-file-label" for="inputGroupFile">{{fileLabel}}</label>
+              <input @change="setFileTitle" type="file" accept="image/*" class="custom-file-input" id="inputGroupImg" aria-describedby="inputGroupFileAddon">
+              <label class="custom-file-label" for="inputGroupImg">{{fileLabel}}</label>
             </div>
           </div>
-
-
         </div>
         <div class="modal-footer">
           <button @click="sendImage" type="button" class="btn btn-primary">Send</button>
@@ -56,6 +50,34 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="liveBackdrop-file"  tabindex="-1" aria-labelledby="liveBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel-file">Send File</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <div class="custom-file">
+              <input @change="setFileTitle" type="file" class="custom-file-input" id="inputGroupFile" aria-describedby="inputGroupFileAddon">
+              <label class="custom-file-label" for="inputGroupFile">{{fileLabel}}</label>
+            </div>
+          </div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button @click="sendFile" type="button" class="btn btn-primary">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 </div>
 </template>
 
@@ -69,7 +91,7 @@ export default {
     return{
       message:"",
       fileLabel:"Choose File",
-      image:null
+      file:null
     }
   },
   computed:{
@@ -125,21 +147,24 @@ export default {
       this.$store.dispatch("SendMessage",msg)
     },
     showSendImage:function (){
-      $("#liveBackdrop").modal("show")
+      $("#liveBackdrop-img").modal("show")
+    },
+    showSendFile:function (){
+      $("#liveBackdrop-file").modal("show")
     },
     setFileTitle:function (res){
       let files = res.target.files
       console.log(files[0])
       if (files.length > 0){
         this.fileLabel = files[0].name
-        this.image = files[0]
+        this.file = files[0]
       }else {
         this.fileLabel = "Choose File"
       }
     },
     sendImage: async function () {
       let self = this
-      let blob = self.image
+      let blob = self.file
       let file = await compressAccurately(blob, 128)
       let base64Reader = new FileReader()
       base64Reader.readAsDataURL(file)
@@ -164,10 +189,14 @@ export default {
           "contentType": "image",
           "content": base64Reader.result
         }
-        self.image = null
+        self.file = null
+        self.fileLabel = "Choose File"
         self.$store.dispatch("SendMessage", msg)
-        $("#liveBackdrop").modal("hide")
+        $("#liveBackdrop-img").modal("hide")
       }
+    },
+    sendFile:function (){
+      //todo: send file
     }
   }
 }
@@ -210,9 +239,10 @@ export default {
   .record-content{
     padding-left: 20px;
   }
-  .img{
+  .img,.file{
     color: cornflowerblue;
-    margin-left: 5px;
+    margin-left: 10px;
+    margin-top: 8px;
   }
   .img:hover{
     cursor: pointer;
