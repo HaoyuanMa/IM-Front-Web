@@ -84,81 +84,93 @@
 <script>
 import $ from "jquery";
 import {compressAccurately} from "image-conversion"
+import * as signalR from "@microsoft/signalr";
 
 export default {
   name: "ChatWindow",
-  data(){
-    return{
-      message:"",
-      fileLabel:"Choose File",
-      file:null
+  data() {
+    return {
+      message: "",
+      fileLabel: "Choose File",
+      file: null
     }
   },
-  computed:{
-    isHost(){
+  computed: {
+    isHost() {
       return this.$store.state.IsHost || this.$store.state.mode !== "broadcast"
     },
-    winTitle(){
+    winTitle() {
       switch (this.$store.state.mode) {
-        case "chat": return this.$store.state.chatTo
-        case "broadcast": return this.$store.state.BroadcastHost + "  is saying"
-        case "chatroom": return "ChatRoom"
-        default: return []
+        case "chat":
+          return this.$store.state.chatTo
+        case "broadcast":
+          return this.$store.state.BroadcastHost + "  is saying"
+        case "chatroom":
+          return "ChatRoom"
+        default:
+          return []
       }
     },
-    records(){
+    records() {
       let rec = []
       let me = this.$store.state.userEmail
       let chatTo = this.$store.state.chatTo
       switch (this.$store.state.mode) {
         case "chat":
-              this.$store.state.chatRecords.forEach(record =>{
-                if((record.from === me && record.to[0] === chatTo)||(record.from === chatTo && record.to[0] === me)){
-                  rec.push(record)
-                }
-              })
-              break
-        case "broadcast": return this.$store.state.BroadcastRecords
-        case "chatroom": return this.$store.state.ChatRoomRecords
-        default: break
+          this.$store.state.chatRecords.forEach(record => {
+            if ((record.from === me && record.to[0] === chatTo) || (record.from === chatTo && record.to[0] === me)) {
+              rec.push(record)
+            }
+          })
+          break
+        case "broadcast":
+          return this.$store.state.BroadcastRecords
+        case "chatroom":
+          return this.$store.state.ChatRoomRecords
+        default:
+          break
       }
       return rec
     }
   },
-  methods:{
-    sendText:function (){
+  methods: {
+    sendText: function () {
       let to = []
       switch (this.$store.state.mode) {
-        case "chat": to = [this.$store.state.chatTo]
-              break
-        case "broadcast": to = this.$store.state.BroadcastUsers
-              break
-        case "chatroom": break
-        default: break
+        case "chat":
+          to = [this.$store.state.chatTo]
+          break
+        case "broadcast":
+          to = this.$store.state.BroadcastUsers
+          break
+        case "chatroom":
+          break
+        default:
+          break
       }
       let msg = {
-        "type":this.$store.state.mode,
-        "from":this.$store.state.userEmail,
+        "type": this.$store.state.mode,
+        "from": this.$store.state.userEmail,
         "to": to,
-        "contentType":"text",
-        "content":this.message
+        "contentType": "text",
+        "content": this.message
       }
       this.message = ""
-      this.$store.dispatch("SendMessage",msg)
+      this.$store.dispatch("SendMessage", msg)
     },
-    showSendImage:function (){
+    showSendImage: function () {
       $("#liveBackdrop-img").modal("show")
     },
-    showSendFile:function (){
+    showSendFile: function () {
       $("#liveBackdrop-file").modal("show")
     },
-    setFileTitle:function (res){
+    setFileTitle: function (res) {
       let files = res.target.files
       console.log(files[0])
-      if (files.length > 0){
+      if (files.length > 0) {
         this.fileLabel = files[0].name
         this.file = files[0]
-      }else {
+      } else {
         this.fileLabel = "Choose File"
       }
     },
@@ -195,8 +207,38 @@ export default {
         $("#liveBackdrop-img").modal("hide")
       }
     },
-    sendFile:function (){
-      //todo: send file
+    sendFile: async function () {
+      console.log("sendFile")
+      let self = this
+      let file = self.file
+      let size = file.size
+      let step = 128 * 1024
+      let cursor = 0
+      const subject = new signalR.Subject()
+      let conn = self.$store.state.connection
+      await conn.send("UploadStream", subject)
+      while (cursor < size) {
+        let chunk = await file.slice(cursor, cursor + step)
+        console.log(chunk)
+        let data = await this.readFile(chunk)
+        //console.log(data)
+        await subject.next(data)
+        cursor += step
+        if (cursor > size) {
+          subject.complete();
+          break
+        }
+      }
+    },
+    readFile: function (chunk){
+      return new Promise((resolve => {
+        let reader = new FileReader()
+        reader.readAsDataURL(chunk)
+        reader.onloadend = function (){
+          console.log("return from readFile")
+          resolve(reader.result)
+        }
+      }))
     }
   }
 }
