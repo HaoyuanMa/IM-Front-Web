@@ -11,6 +11,21 @@
           <br>
           <span v-if="record.contentType === 'text'" class="record-content" >{{record.content}}</span>
           <img v-if="record.contentType === 'image'" :src="record.content" class="record-content" style="width: 55%;">
+          <div class="card mb-3" v-if="record.contentType === 'file'" style="width: 55%;height: 100px">
+            <div class="row no-gutters" style="height: 100%">
+              <div class="col-md-3" style="height: 100%;border-right: cornflowerblue solid 1px">
+                <font-awesome-icon :icon="['fas','file']" class="record-file"></font-awesome-icon>
+              </div>
+              <div class="col-md-9" style="height: 100%;padding-left: 20px">
+                <div class="card-body" style="height: 100%; padding: 10px">
+                  <span class="record-content" :title=record.content>{{cutTitle(record.content)}}</span>
+                  <div class="progress" style="width: 90%; margin-top: 10%">
+                    <div class="progress-bar" role="progressbar" :style="'width: ' + getProgressWidth(record.content)" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </li>
     </ul>
@@ -92,7 +107,8 @@ export default {
     return {
       message: "",
       fileLabel: "Choose File",
-      file: null
+      file: null,
+      progress: 0
     }
   },
   computed: {
@@ -134,6 +150,18 @@ export default {
     }
   },
   methods: {
+    getProgressWidth(fileName){
+      if(this.file == null || this.file.name !== fileName){
+        return "100%"
+      }
+      return  this.progress.toString() + '%'
+    },
+    cutTitle: function (title){
+      if(title.length > 20){
+        return title.slice(0,20) + "..."
+      }
+      return title
+    },
     sendText: function () {
       let to = []
       switch (this.$store.state.mode) {
@@ -162,6 +190,10 @@ export default {
       $("#liveBackdrop-img").modal("show")
     },
     showSendFile: function () {
+      if(this.file){
+        alert("some file is sending, please wait to finish")
+        return
+      }
       $("#liveBackdrop-file").modal("show")
     },
     setFileTitle: function (res) {
@@ -214,17 +246,54 @@ export default {
       let size = file.size
       let step = 128 * 1024
       let cursor = 0
+      let to = []
+      switch (self.$store.state.mode) {
+        case "chat":
+          to = [self.$store.state.chatTo]
+          break
+        case "broadcast":
+          to = self.$store.state.BroadcastUsers
+          break
+        case "chatroom":
+          break
+        default:
+          break
+      }
+      let msg = {
+        "type": self.$store.state.mode,
+        "from": self.$store.state.userEmail,
+        "to": to,
+        "contentType": "file",
+        "content": file.name,
+        "fileSize": size
+      }
+
+      $("#liveBackdrop-file").modal("hide")
+      //console.log(msg)
+      await self.$store.dispatch("SendMessage", msg)
+      //todo: show trans view
       const subject = new signalR.Subject()
       let conn = self.$store.state.connection
       await conn.send("UploadStream", subject)
       while (cursor < size) {
         let chunk = await file.slice(cursor, cursor + step)
-        console.log(chunk)
-        let data = await this.readFile(chunk)
-        //console.log(data)
+        //console.log(chunk)
+        let result = await this.readFile(chunk)
+       // console.log(result)
+        let data = {
+          "name":file.name,
+          "from":self.$store.state.userEmail,
+          "data":result,
+          "order":Math.floor(cursor/step)
+        }
         await subject.next(data)
         cursor += step
+        self.progress = cursor/size * 100
         if (cursor > size) {
+          self.file = null
+          self.fileLabel = "Choose File"
+          $(".progress-bar").width = "100%"
+          self.progress = 0
           subject.complete();
           break
         }
@@ -235,7 +304,7 @@ export default {
         let reader = new FileReader()
         reader.readAsDataURL(chunk)
         reader.onloadend = function (){
-          console.log("return from readFile")
+          //console.log("return from readFile")
           resolve(reader.result)
         }
       }))
@@ -279,7 +348,10 @@ export default {
 
   }
   .record-content{
-    padding-left: 20px;
+    padding-left: 0;
+  }
+  .record-icon,.record-text{
+    height: 90%;
   }
   .img,.file{
     color: cornflowerblue;
@@ -310,6 +382,13 @@ export default {
   }
   .record-item{
     border: 0;
+  }
+  .record-file{
+    color: cornflowerblue;
+    margin-top: 15%;
+    margin-left: 15%;
+    height: 70%;
+    width: 70%;
   }
   .list-group{
     height: 100%;

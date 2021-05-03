@@ -50,7 +50,6 @@ export default createStore({
       })
 
       state.connection.on("ReceiveMessage", function (x)   {
-        //let m = x.from+" says: "+x.content;
         switch (x.type) {
           case "chat": state.chatRecords.push(x)
               state.chatTo = x.from

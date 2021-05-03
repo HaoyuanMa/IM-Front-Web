@@ -5,13 +5,13 @@ import "jquery/dist/jquery.slim.min"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap/dist/js/bootstrap.bundle.min"
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faImage,faFolder } from '@fortawesome/free-solid-svg-icons'
+import { faImage,faFolder,faFile } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import store from './store/index'
 
 
 
-library.add(faImage,faFolder)
+library.add(faImage,faFolder,faFile)
 
 
 
