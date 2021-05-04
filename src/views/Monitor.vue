@@ -46,7 +46,7 @@ export default {
   async mounted() {
     await this.$store.commit("BuildConnection")
     await this.$store.dispatch("StartConnection")
-    this.$store.state.connection.stream("DownloadStream", 20,500)
+    this.$store.state.connection.stream("DownloadStream", 500)
         .subscribe({
           next: (item) => {
             this.record.push(item)
