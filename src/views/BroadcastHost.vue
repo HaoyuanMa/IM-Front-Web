@@ -32,7 +32,7 @@ export default {
     //bind func
     this.$store.commit("Bind")
     this.$store.commit("SetMode","broadcast")
-    this.$store.state.IsHost = true
+    this.$store.state.isHost = true
     //this.$store.dispatch("StartConnection")
     this.$store.dispatch("SetOnline","broadcast")
   },

@@ -17,8 +17,8 @@ export default {
     users(){
       switch (this.$store.state.mode) {
         case "chat": return this.$store.state.chatUsers
-        case "broadcast": return this.$store.state.BroadcastUsers
-        case "chatroom": return this.$store.state.ChatRoomUsers
+        case "broadcast": return this.$store.state.broadcastUsers
+        case "chatroom": return this.$store.state.chatRoomUsers
         default: return []
       }
 

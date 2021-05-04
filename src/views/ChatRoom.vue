@@ -32,6 +32,7 @@ export default {
     //bind func
     this.$store.commit("Bind")
     this.$store.commit("SetMode","chatroom")
+    this.$store.state.isHost = false
     //this.$store.dispatch("StartConnection")
     this.$store.dispatch("SetOnline","chatroom")
   },

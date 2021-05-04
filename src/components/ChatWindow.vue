@@ -4,7 +4,7 @@
     <a class="chat-title">{{winTitle}}</a>
   </div>
   <div class="chat-win">
-    <ul class="list-group list-group-flush">
+    <ul class="list-group list-group-flush" id="record-list">
       <li v-for="record in records" v-bind:key="record" class="list-group-item record-item">
         <div class="msg">
           <span class="record-from">{{record.from}}</span>
@@ -19,8 +19,11 @@
               <div class="col-md-9" style="height: 100%;padding-left: 20px">
                 <div class="card-body" style="height: 100%; padding: 10px">
                   <span class="record-content" :title=record.content>{{cutTitle(record.content)}}</span>
-                  <div class="progress" style="width: 90%; margin-top: 10%">
+                  <div v-if="record.from === me" class="progress" style="width: 90%; margin-top: 10%">
                     <div class="progress-bar" role="progressbar" :style="'width: ' + getProgressWidth(record.content)" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div v-if="record.from !== me" style="width: 90%; margin-top: 10%">
+                    <a @click="downloadFile(host + 'UploadFiles/' + record.from + '/' + record.content,record.content)" href="#">下载</a>
                   </div>
                 </div>
               </div>
@@ -100,6 +103,7 @@
 import $ from "jquery";
 import {compressAccurately} from "image-conversion"
 import * as signalR from "@microsoft/signalr";
+import axios from "axios";
 
 export default {
   name: "ChatWindow",
@@ -112,15 +116,21 @@ export default {
     }
   },
   computed: {
+    host(){
+      return this.$store.state.host
+    },
+    me(){
+      return this.$store.state.userEmail
+    },
     isHost() {
-      return this.$store.state.IsHost || this.$store.state.mode !== "broadcast"
+      return this.$store.state.isHost || this.$store.state.mode !== "broadcast"
     },
     winTitle() {
       switch (this.$store.state.mode) {
         case "chat":
           return this.$store.state.chatTo
         case "broadcast":
-          return this.$store.state.BroadcastHost + "  is saying"
+          return this.$store.state.broadcastHost + "  is saying"
         case "chatroom":
           return "ChatRoom"
         default:
@@ -140,9 +150,15 @@ export default {
           })
           break
         case "broadcast":
-          return this.$store.state.BroadcastRecords
+          this.$store.state.broadcastRecords.forEach(record => {
+            rec.push(record)
+          })
+              break
         case "chatroom":
-          return this.$store.state.ChatRoomRecords
+          this.$store.state.chatRoomRecords.forEach(record => {
+              rec.push(record)
+          })
+              break
         default:
           break
       }
@@ -150,6 +166,25 @@ export default {
     }
   },
   methods: {
+    downloadFile: function (fileUrl,fileName) {
+      axios({
+        method: "get",
+        url: fileUrl,
+        headers: {
+          "Access-Control-Allow-Origin": "http://localhost:8080",
+        },
+        responseType:"blob",
+      }).then(function (response) {
+        let data = response.data
+        //let b = new Blob(response.data)
+        console.log(data)
+        let url = window.URL.createObjectURL(data)
+        let a = document.createElement('a');
+        a.href = url
+        a.download = fileName
+        a.click()
+      })
+    },
     getProgressWidth(fileName){
       if(this.file == null || this.file.name !== fileName){
         return "100%"
@@ -169,7 +204,7 @@ export default {
           to = [this.$store.state.chatTo]
           break
         case "broadcast":
-          to = this.$store.state.BroadcastUsers
+          to = this.$store.state.broadcastUsers
           break
         case "chatroom":
           break
@@ -207,6 +242,7 @@ export default {
       }
     },
     sendImage: async function () {
+
       let self = this
       let blob = self.file
       let file = await compressAccurately(blob, 128)
@@ -219,7 +255,7 @@ export default {
             to = [self.$store.state.chatTo]
             break
           case "broadcast":
-            to = self.$store.state.BroadcastUsers
+            to = self.$store.state.broadcastUsers
             break
           case "chatroom":
             break
@@ -241,6 +277,7 @@ export default {
     },
     sendFile: async function () {
       console.log("sendFile")
+
       let self = this
       let file = self.file
       let size = file.size
@@ -252,7 +289,7 @@ export default {
           to = [self.$store.state.chatTo]
           break
         case "broadcast":
-          to = self.$store.state.BroadcastUsers
+          to = self.$store.state.broadcastUsers
           break
         case "chatroom":
           break
@@ -267,11 +304,20 @@ export default {
         "content": file.name,
         "fileSize": size
       }
-
+      switch (self.$store.state.mode){
+        case "chat":
+          self.$store.state.chatRecords.push(msg)
+              break
+        case "broadcast":
+          self.$store.state.broadcastRecords.push(msg)
+              break
+        case "chatroom":
+          self.$store.state.chatRoomRecords.push(msg)
+              break
+        default:break
+      }
+      //console.log("pushed")
       $("#liveBackdrop-file").modal("hide")
-      //console.log(msg)
-      await self.$store.dispatch("SendMessage", msg)
-      //todo: show trans view
       const subject = new signalR.Subject()
       let conn = self.$store.state.connection
       await conn.send("UploadStream", subject)
@@ -290,9 +336,10 @@ export default {
         cursor += step
         self.progress = cursor/size * 100
         if (cursor > size) {
+          //console.log(msg)
+          await self.$store.dispatch("SendMessage", msg)
           self.file = null
           self.fileLabel = "Choose File"
-          $(".progress-bar").width = "100%"
           self.progress = 0
           subject.complete();
           break
@@ -308,6 +355,15 @@ export default {
           resolve(reader.result)
         }
       }))
+    }
+  },
+  watch:{
+    records(){
+      //console.log("watch")
+      this.$nextTick(() => {
+        let container = this.$el.querySelector("#record-list");//#chat-list为ul的id
+        container.scrollTop = container.scrollHeight
+      })
     }
   }
 }

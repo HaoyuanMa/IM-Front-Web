@@ -21,7 +21,7 @@ const routes = [
     component: Chat
   },
   {
-    path: '/BroadcastHost',
+    path: '/broadcastHost',
     name: 'BroadcastHost',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
