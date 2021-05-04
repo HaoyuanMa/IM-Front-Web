@@ -320,7 +320,7 @@ export default {
       $("#liveBackdrop-file").modal("hide")
       const subject = new signalR.Subject()
       let conn = self.$store.state.connection
-      await conn.send("UploadStream", subject)
+      await conn.send("UploadFile", subject)
       while (cursor < size) {
         let chunk = await file.slice(cursor, cursor + step)
         //console.log(chunk)
@@ -397,17 +397,19 @@ export default {
     height: 100%;
     width: 100%;
     resize: none;
+  }.msg{
+    border: 0;
+    height: 100%;
+    width: 100%;
+    resize: none;
   }
   .record-item{
     background: azure;
     padding: 5px;
-
+    border: 0;
   }
   .record-content{
     padding-left: 0;
-  }
-  .record-icon,.record-text{
-    height: 90%;
   }
   .img,.file{
     color: cornflowerblue;
@@ -435,9 +437,6 @@ export default {
   .footer{
     height: 10px;
     background: white;
-  }
-  .record-item{
-    border: 0;
   }
   .record-file{
     color: cornflowerblue;

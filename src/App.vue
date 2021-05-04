@@ -6,6 +6,7 @@
       <router-link class="nav-link"  data-toggle="tab"  role="tab"  aria-selected="false" to="/broadcastHost">broadcastHost</router-link>
       <router-link class="nav-link"  data-toggle="tab"  role="tab"  aria-selected="false" to="/BroadcastReceive">BroadcastReceive</router-link>
       <router-link class="nav-link"  data-toggle="tab"  role="tab"  aria-selected="false" to="/ChatRoom">ChatRoom</router-link>
+      <router-link class="nav-link"  data-toggle="tab"  role="tab"  aria-selected="false" to="/Monitor">Monitor</router-link>
     </div>
   </nav>
   <router-view/>

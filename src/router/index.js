@@ -4,6 +4,7 @@ import BroadcastHost from "@/views/BroadcastHost";
 import ChatRoom from "@/views/ChatRoom";
 import Login from "@/views/Login";
 import BroadcastReceive from "@/views/BroadcastReceive";
+import Monitor from "@/views/Monitor";
 
 const routes = [
   {
@@ -37,6 +38,11 @@ const routes = [
     path: '/ChatRoom',
     name: 'ChatRoom',
     component: ChatRoom
+  },
+  {
+    path: '/Monitor',
+    name: 'Monitor',
+    component: Monitor
   }
 ]
 
