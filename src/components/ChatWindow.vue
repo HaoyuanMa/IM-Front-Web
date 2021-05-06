@@ -23,7 +23,7 @@
                     <div class="progress-bar" role="progressbar" :style="'width: ' + getProgressWidth(record.content)" aria-valuemin="0" aria-valuemax="100"></div>
                   </div>
                   <div v-if="record.from !== me" style="width: 90%; margin-top: 10%">
-                    <a @click="downloadFile(host + 'UploadFiles/' + record.from + '/' + record.content,record.content)" href="#">下载</a>
+                    <a @click="downloadFile(host + '/UploadFiles/' + record.from + '/' + record.content,record.content)" href="#">下载</a>
                   </div>
                 </div>
               </div>
@@ -57,7 +57,7 @@
         <div class="modal-body">
           <div class="input-group">
             <div class="custom-file">
-              <input @change="setFileTitle" type="file" accept="image/*" class="custom-file-input" id="inputGroupImg" aria-describedby="inputGroupFileAddon">
+              <input @change="setImageTitle" type="file" accept="image/*" class="custom-file-input" id="inputGroupImg" aria-describedby="inputGroupFileAddon">
               <label class="custom-file-label" for="inputGroupImg">{{fileLabel}}</label>
             </div>
           </div>
@@ -111,6 +111,7 @@ export default {
       message: "",
       fileLabel: "Choose File",
       file: null,
+      image:null,
       progress: {count:0}
     }
   },
@@ -230,6 +231,16 @@ export default {
       }
       $("#liveBackdrop-file").modal("show")
     },
+    setImageTitle : function (res){
+      let files = res.target.files
+      console.log(files[0])
+      if (files.length > 0) {
+        this.fileLabel = files[0].name
+        this.image = files[0]
+      } else {
+        this.fileLabel = "Choose File"
+      }
+    },
     setFileTitle: function (res) {
       let files = res.target.files
       console.log(files[0])
@@ -243,7 +254,7 @@ export default {
     sendImage: async function () {
 
       let self = this
-      let blob = self.file
+      let blob = self.image
       let file = await compressAccurately(blob, 128)
       let base64Reader = new FileReader()
       base64Reader.readAsDataURL(file)
@@ -268,7 +279,7 @@ export default {
           "contentType": "image",
           "content": base64Reader.result
         }
-        self.file = null
+        self.image = null
         self.fileLabel = "Choose File"
         self.$store.dispatch("SendMessage", msg)
         $("#liveBackdrop-img").modal("hide")
@@ -315,12 +326,10 @@ export default {
       }
       //console.log("pushed")
       $("#liveBackdrop-file").modal("hide")
-
-
       console.log("befor upload stream")
       console.log(self.progress)
-      await self.$store.dispatch("UploadStream", {file:file,progress:self.progress})
-
+      await self.$store.dispatch("UploadFile", {file:file,progress:self.progress})
+      console.log("after upload stream")
       await self.$store.dispatch("SendMessage", msg)
       self.file = null
       self.fileLabel = "Choose File"

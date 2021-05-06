@@ -3,6 +3,7 @@ import { createStore } from 'vuex'
 export default createStore({
     state: {
         env:"go",
+        host:"http://localhost:5202",
         mode:"",
         connection:null,
         userEmail:"",
@@ -131,7 +132,6 @@ export default createStore({
                 let call = {
                     "Method": "SetOnline",
                     "Params": {
-                        "token": self.state.token,
                         "loginType": type
                     }
                 }
@@ -145,11 +145,12 @@ export default createStore({
 
         },
         async SendMessage(context,msg){
-            this.state.chatRecords.push(msg)
+            if(msg.contentType !== "file"){
+                this.state.chatRecords.push(msg)
+            }
             let call = {
                 "Method":"SendMessage",
                 "Params":{
-                    "token": this.state.token,
                     "msg":JSON.stringify(msg)
                 }
             }
@@ -159,6 +160,56 @@ export default createStore({
             await this.state.connection.send(message)
             console.log("send message: ")
             console.log(msg)
+        },
+        async UploadFile({dispatch},payload){
+            console.log("upload stream ")
+            console.log(payload)
+            let file = payload.file
+            let step = 128 * 1024
+            let cursor = 0
+            let size = file.size
+            let conn = this.state.connection
+            let call = {
+                "Method":"StartUploadFile",
+                "Params":{
+                    "file": file.name,
+                    "user":this.state.userEmail,
+                }
+            }
+            console.log(call)
+            let msg = JSON.stringify(call)
+            await conn.send(msg)
+            while (cursor < size) {
+                let chunk = await file.slice(cursor, cursor + step)
+                //console.log(chunk)
+                let result = await dispatch("readFile",chunk)
+                // console.log(result)
+                await conn.send(result)
+                cursor += step
+                payload.progress.count = cursor/size * 100
+                if (cursor > size) {
+                    let call = {
+                        "Method":"StopUploadFile",
+                        "Params":{
+                        }
+                    }
+                    console.log(call)
+                    let msg = JSON.stringify(call)
+                    await conn.send(msg)
+                    break
+                }
+            }
+
+        },
+        readFile: function (context,chunk){
+            return new Promise((resolve => {
+                let reader = new FileReader()
+                reader.readAsArrayBuffer(chunk)
+                reader.onloadend = function (){
+                    //console.log("return from readFile")
+                    resolve(reader.result)
+                }
+            }))
         }
     },
     modules: {

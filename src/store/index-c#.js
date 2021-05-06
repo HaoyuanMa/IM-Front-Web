@@ -4,7 +4,7 @@ import * as signalR from "@microsoft/signalr";
 export default createStore({
   state: {
     env:".net",
-    host:"http://localhost:12165/",
+    host:"http://localhost:12165",
     mode:"",
     connection:null,
     userEmail:"",
@@ -122,7 +122,7 @@ export default createStore({
       console.log("send message: ")
       console.log(msg)
     },
-    async UploadStream({dispatch},payload){
+    async UploadFile({dispatch},payload){
       console.log("upload stream ")
       console.log(payload)
       let file = payload.file
@@ -146,10 +146,7 @@ export default createStore({
         }
         await subject.next(data)
         cursor += step
-
-        //todo: progress
         payload.progress.count = cursor/size * 100
-
         if (cursor > size) {
           //console.log(msg)
           subject.complete();
