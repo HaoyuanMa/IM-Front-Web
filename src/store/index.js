@@ -102,7 +102,6 @@ export default createStore({
       return console.log("start connection")
     },
     async StopConnection(){
-
       this.state.chatUsers.splice(0,this.state.chatUsers.length)
       this.state.broadcastUsers.splice(0,this.state.broadcastUsers.length)
       this.state.chatRoomUsers.splice(0,this.state.chatRoomUsers.length)
@@ -122,6 +121,52 @@ export default createStore({
       await this.state.connection.invoke("SendMessage",msg)
       console.log("send message: ")
       console.log(msg)
+    },
+    async UploadStream({dispatch},payload){
+      console.log("upload stream ")
+      console.log(payload)
+      let file = payload.file
+      let step = 128 * 1024
+      let cursor = 0
+      let size = file.size
+
+      const subject = new signalR.Subject()
+      let conn = this.state.connection
+      await conn.send("UploadFile", subject)
+      while (cursor < size) {
+        let chunk = await file.slice(cursor, cursor + step)
+        //console.log(chunk)
+        let result = await dispatch("readFile",chunk)
+        // console.log(result)
+        let data = {
+          "name":file.name,
+          "from":this.state.userEmail,
+          "data":result,
+          "order":Math.floor(cursor/step)
+        }
+        await subject.next(data)
+        cursor += step
+
+        //todo: progress
+        payload.progress.count = cursor/size * 100
+
+        if (cursor > size) {
+          //console.log(msg)
+          subject.complete();
+          break
+        }
+      }
+
+    },
+    readFile: function (context,chunk){
+      return new Promise((resolve => {
+        let reader = new FileReader()
+        reader.readAsDataURL(chunk)
+        reader.onloadend = function (){
+          //console.log("return from readFile")
+          resolve(reader.result)
+        }
+      }))
     }
   },
   modules: {

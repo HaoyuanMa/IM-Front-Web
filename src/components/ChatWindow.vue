@@ -102,7 +102,6 @@
 <script>
 import $ from "jquery";
 import {compressAccurately} from "image-conversion"
-import * as signalR from "@microsoft/signalr";
 import axios from "axios";
 
 export default {
@@ -112,7 +111,7 @@ export default {
       message: "",
       fileLabel: "Choose File",
       file: null,
-      progress: 0
+      progress: {count:0}
     }
   },
   computed: {
@@ -189,7 +188,7 @@ export default {
       if(this.file == null || this.file.name !== fileName){
         return "100%"
       }
-      return  this.progress.toString() + '%'
+      return  this.progress.count.toString() + '%'
     },
     cutTitle: function (title){
       if(title.length > 20){
@@ -281,8 +280,6 @@ export default {
       let self = this
       let file = self.file
       let size = file.size
-      let step = 128 * 1024
-      let cursor = 0
       let to = []
       switch (self.$store.state.mode) {
         case "chat":
@@ -318,43 +315,16 @@ export default {
       }
       //console.log("pushed")
       $("#liveBackdrop-file").modal("hide")
-      const subject = new signalR.Subject()
-      let conn = self.$store.state.connection
-      await conn.send("UploadFile", subject)
-      while (cursor < size) {
-        let chunk = await file.slice(cursor, cursor + step)
-        //console.log(chunk)
-        let result = await this.readFile(chunk)
-       // console.log(result)
-        let data = {
-          "name":file.name,
-          "from":self.$store.state.userEmail,
-          "data":result,
-          "order":Math.floor(cursor/step)
-        }
-        await subject.next(data)
-        cursor += step
-        self.progress = cursor/size * 100
-        if (cursor > size) {
-          //console.log(msg)
-          await self.$store.dispatch("SendMessage", msg)
-          self.file = null
-          self.fileLabel = "Choose File"
-          self.progress = 0
-          subject.complete();
-          break
-        }
-      }
-    },
-    readFile: function (chunk){
-      return new Promise((resolve => {
-        let reader = new FileReader()
-        reader.readAsDataURL(chunk)
-        reader.onloadend = function (){
-          //console.log("return from readFile")
-          resolve(reader.result)
-        }
-      }))
+
+
+      console.log("befor upload stream")
+      console.log(self.progress)
+      await self.$store.dispatch("UploadStream", {file:file,progress:self.progress})
+
+      await self.$store.dispatch("SendMessage", msg)
+      self.file = null
+      self.fileLabel = "Choose File"
+      self.progress.count = 0
     }
   },
   watch:{
