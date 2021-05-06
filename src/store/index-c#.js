@@ -164,6 +164,23 @@ export default createStore({
           resolve(reader.result)
         }
       }))
+    },
+    Subscribe: async function (contest,record){
+       this.state.connection.stream("DownloadStream", 500)
+          .subscribe({
+            next: (item) => {
+              console.log(item)
+              record.push(item)
+              console.log(record)
+            },
+            complete: () => {
+              console.log("complete")
+              console.log(record)
+            },
+            error: (err) => {
+              console.log(err)
+            },
+          });
     }
   },
   modules: {

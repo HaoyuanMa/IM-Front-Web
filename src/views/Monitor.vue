@@ -44,20 +44,14 @@ export default {
     }
   },
   async mounted() {
+
     await this.$store.commit("BuildConnection")
     await this.$store.dispatch("StartConnection")
-    this.$store.state.connection.stream("DownloadStream", 500)
-        .subscribe({
-          next: (item) => {
-            this.record.push(item)
-          },
-          complete: () => {
-            console.log("complete")
-          },
-          error: (err) => {
-            console.log(err)
-          },
-        });
+    this.$store.dispatch("Subscribe",this.record)
+  },
+  async unmounted(){
+    await this.$store.dispatch("StopConnection")
+    this.record.splice(0,this.record.length)
   }
 }
 </script>

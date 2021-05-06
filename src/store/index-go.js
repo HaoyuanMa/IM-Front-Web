@@ -29,6 +29,7 @@ export default createStore({
             state.connection = new WebSocket("ws://localhost:5202/Socket/BuildConnection?token=" + state.token)
             console.log("buid connection")
         },
+        StartConnection(){},
         Bind(state){
             state.connection.onmessage = function (evt){
                 console.log(evt)
