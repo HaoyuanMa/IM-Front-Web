@@ -16,7 +16,8 @@ export default createStore({
         broadcastHost:"",
         isHost:false,
         chatRoomUsers:[],
-        chatRoomRecords:[]
+        chatRoomRecords:[],
+        streamRecords:[]
 
 
     },
@@ -27,9 +28,8 @@ export default createStore({
         },
         BuildConnection(state) {
             state.connection = new WebSocket("ws://localhost:5202/Socket/BuildConnection?token=" + state.token)
-            console.log("buid connection")
+            console.log("build connection")
         },
-        StartConnection(){},
         Bind(state){
             state.connection.onmessage = function (evt){
                 console.log(evt)
@@ -52,7 +52,6 @@ export default createStore({
                     case "GetChatRoomUsers":
                         GetChatRoomUsers(callBack.params)
                         break
-
                     default:break
                 }
             }
@@ -117,6 +116,7 @@ export default createStore({
         },
     },
     actions: {
+        StartConnection(){},
         StopConnection(){
 
             this.state.chatUsers.splice(0,this.state.chatUsers.length)
@@ -211,6 +211,15 @@ export default createStore({
                     resolve(reader.result)
                 }
             }))
+        },
+        async Subscribe ({dispatch},record) {
+            await dispatch("SetOnline","")
+            this.state.connection.onmessage = function (evt){
+                console.log(evt)
+                let callBack = JSON.parse(evt.data)
+                console.log(callBack)
+                record.push(callBack.params)
+            }
         }
     },
     modules: {
