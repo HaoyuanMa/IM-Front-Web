@@ -46,7 +46,8 @@ export default {
   async mounted() {
 
     await this.$store.commit("BuildConnection")
-    await this.$store.dispatch("StartConnection")
+    //await this.$store.dispatch("StartConnection")
+    await this.$store.dispatch("SetOnline","stream")
     this.$store.dispatch("Subscribe",this.record)
   },
   async unmounted(){

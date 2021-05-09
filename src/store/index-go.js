@@ -212,8 +212,8 @@ export default createStore({
                 }
             }))
         },
-        async Subscribe ({dispatch},record) {
-            await dispatch("SetOnline","")
+        async Subscribe (context,record) {
+            //await dispatch("SetOnline","")
             this.state.connection.onmessage = function (evt){
                 console.log(evt)
                 let callBack = JSON.parse(evt.data)
