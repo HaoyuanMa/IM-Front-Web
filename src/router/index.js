@@ -5,8 +5,14 @@ import ChatRoom from "@/views/ChatRoom";
 import Login from "@/views/Login";
 import BroadcastReceive from "@/views/BroadcastReceive";
 import Monitor from "@/views/Monitor";
+import Register from "@/views/Register";
 
 const routes = [
+  {
+    path: '/Register',
+    name: 'Register',
+    component: Register
+  },
   {
     path: '/',
     redirect: '/Login'

@@ -1,9 +1,9 @@
 <template>
-  <div class="modal fade" id="staticBackdrop"  data-keyboard="true" data-show="true" data-focus="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal fade" id="staticBackdrop" data-keyboard="false" data-show="true" data-focus="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Login</h5>
+          <h5 class="modal-title" id="staticBackdropLabel">Register</h5>
           <!--
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -25,7 +25,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button @click="Login" id="login" type="button" class="btn btn-primary">Login</button>
+          <button @click="Register" id="login" type="button" class="btn btn-primary">Register</button>
         </div>
       </div>
     </div>
@@ -45,7 +45,7 @@ export default {
     }
   },
   methods:{
-    Login:function (){
+    Register:function (){
       let self = this
       $("#login").addClass("disabled")
       //$("#login").setAttribute("aria-disabled","true")
@@ -56,13 +56,13 @@ export default {
       let address = ""
       let jsonData = null
       if(self.$store.state.env === "go"){
-        address = "http://localhost:5202/Account/Login"
+        address = "http://182.92.183.106:12165/Account/Register"
         jsonData = {
           "username":self.email,
           "password":self.password
         }
       }else {
-        address = "http://182.92.183.106:12165/Account/Login"
+        address = "http://182.92.183.106:12165/Account/Register"
         jsonData = {
           "Email":self.email,
           "Password":self.password
@@ -79,13 +79,11 @@ export default {
         },
         data:JSON.stringify(jsonData)
       }).then(function (response){
-        if(self.$store.state.env === "go"){
-          self.$store.state.token = response.data.token
+        if(response.status === 200){
+          alert("success")
         }else{
-          self.$store.state.token = response.data
+          alert("failed")
         }
-        self.$store.state.userEmail = self.email
-
 
         $("#staticBackdrop").modal("hide")
 

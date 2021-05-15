@@ -171,7 +171,7 @@ export default {
         method: "get",
         url: fileUrl,
         headers: {
-          "Access-Control-Allow-Origin": "http://localhost:8080",
+          "Access-Control-Allow-Origin": "http://182.92.183.106:5000",
         },
         responseType:"blob",
       }).then(function (response) {

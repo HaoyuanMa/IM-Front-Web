@@ -4,7 +4,7 @@ import * as signalR from "@microsoft/signalr";
 export default createStore({
   state: {
     env:".net",
-    host:"http://localhost:12165",
+    host:"http://182.92.183.106:12165",
     mode:"",
     connection:null,
     userEmail:"",
@@ -25,7 +25,7 @@ export default createStore({
       state.mode = m
     },
     BuildConnection(state){
-      state.connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:12165/Hubs/MessageHub", { accessTokenFactory: () => this.state.token }).build();
+      state.connection = new signalR.HubConnectionBuilder().withUrl("http://182.92.183.106:12165/Hubs/MessageHub", { accessTokenFactory: () => this.state.token }).build();
       console.log("build connection")
       },
     Bind(state){
